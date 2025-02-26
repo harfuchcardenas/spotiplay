@@ -26,11 +26,9 @@ while (my $line = <$fh>) {
 
     # Split the line based on the specified character (comma in this case)
     my @strings = split(/,/, $line);
-
     # Print the separated strings
-    foreach my $string (@strings) {
-        print "$string\n";
-    }
-
+    my $songID = $strings[6];
+    print "ID: $songID\n";
+}
 # Close the file handle
 close($fh);
