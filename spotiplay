@@ -1,0 +1,36 @@
+#!/usr/bin/perl
+
+use strict;  # Enforce strict variable declaration
+use warnings; # Enable warnings for better debugging
+
+# Print "Hello, World!" to the console
+print "Hello, World!\n";
+my $temp = '/../include';
+my $current_directory = qx(pwd);
+# Remove the newline character from the end of the output
+chomp($current_directory);
+$current_directory=$current_directory.$temp;
+
+# Print the current directory path
+print "Current directory: $current_directory\n";
+system('cd ../include');
+# Specify the filename
+my $filename = $current_directory.'/My Spotify Library.csv';
+
+# Open the file for reading
+open(my $fh, '<', $filename) or die "Could not open file '$filename' $!";
+
+# Read the file line by line
+while (my $line = <$fh>) {
+    chomp $line;  # Remove the newline character at the end of the line
+
+    # Split the line based on the specified character (comma in this case)
+    my @strings = split(/,/, $line);
+
+    # Print the separated strings
+    foreach my $string (@strings) {
+        print "$string\n";
+    }
+
+# Close the file handle
+close($fh);
