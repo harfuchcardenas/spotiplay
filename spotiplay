@@ -16,10 +16,11 @@ print "Current directory: $current_directory\n";
 system('cd ../include');
 # Specify the filename
 my $filename = $current_directory.'/My Spotify Library.csv';
-
+my @id;
+my $id;
+my $i = 0;
 # Open the file for reading
 open(my $fh, '<', $filename) or die "Could not open file '$filename' $!";
-my $i = 0;
 # Read the file line by line
 while (my $line = <$fh>) {
     chomp($line);  # Remove the newline character at the end of the line
@@ -27,8 +28,20 @@ while (my $line = <$fh>) {
     my @strings = split(/,/, $line);
     # Print the separated strings
     my $songID = $strings[6];
-    print "ID: $songID\n";
+    print "songID: $songID\n";
+    $id[$i]=$songID;
+    $i++;
 }
 # Close the file handle
 close($fh);
+print "ID: @id";
+my $URL = 'https://open.spotify.com/intl-de/track/';
+for(my $i = 1; $i < $#id;$i++){
+    my $spotifyURL=$URL.$id[$i];
+    print "ID: $spotifyURL\n";
+    system('spotdl download $spotifyURL');
+    $i++;
+    #select(undef, undef, undef, 0.5);
+}
+
 #system();
