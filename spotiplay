@@ -13,7 +13,6 @@ $current_directory=$current_directory.$temp;
 
 # Print the current directory path
 print "Current directory: $current_directory\n";
-system('cd ../include');
 # Specify the filename
 my $filename = $current_directory.'/My Spotify Library.csv';
 my @id;
@@ -34,14 +33,14 @@ while (my $line = <$fh>) {
 }
 # Close the file handle
 close($fh);
-print "ID: @id";
+my $spotifyURL;
+my @spotifyURL;
 my $URL = 'https://open.spotify.com/intl-de/track/';
 for(my $i = 1; $i < $#id;$i++){
-    my $spotifyURL=$URL.$id[$i];
-    print "ID: $spotifyURL\n";
-    system('spotdl download $spotifyURL');
-    $i++;
-    #select(undef, undef, undef, 0.5);
+    push(@spotifyURL,$URL.$id[$i]);
 }
-
+foreach (@spotifyURL){
+system('spotdl download $_');
+}
+#select(undef, undef, undef, 0.5);
 #system();
