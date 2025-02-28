@@ -22,22 +22,12 @@ open(my $fh, '<', $filename) or die "Could not open file '$filename' $!";
 my $i = 0;
 # Read the file line by line
 while (my $line = <$fh>) {
-    chomp $line;  # Remove the newline character at the end of the line
-
+    chomp($line);  # Remove the newline character at the end of the line
     # Split the line based on the specified character (comma in this case)
     my @strings = split(/,/, $line);
     # Print the separated strings
     my $songID = $strings[6];
     print "ID: $songID\n";
-    my $URL = 'https://open.spotify.com/intl-de/track/';
-    my $spotifyURL=$URL.$songID;
-    if ($i  == 0){
-        $i++
-    }else{
-        system('spotdl download $spotifyURL');
-        $i++;
-        #select(undef, undef, undef, 0.5);
-    }
 }
 # Close the file handle
 close($fh);
