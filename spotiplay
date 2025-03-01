@@ -39,8 +39,13 @@ my $URL = 'https://open.spotify.com/intl-de/track/';
 for(my $i = 1; $i < $#id;$i++){
     push(@spotifyURL,$URL.$id[$i]);
 }
+my $func = 0;
 foreach (@spotifyURL){
-system('spotdl download $_');
+my $hash =$_;
+$hash =~ tr/"//d;
+print "\n HASH: $hash";
+$func = system("spotdl download $hash");
+if($func==1){
+   next
+}else{print "Fail"}
 }
-#select(undef, undef, undef, 0.5);
-#system();
