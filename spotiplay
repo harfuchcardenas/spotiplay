@@ -43,7 +43,10 @@ my $func = 0;
 foreach (@spotifyURL){
    my $hash =$_;
    $hash =~ tr/"//d;
-   while(!system("spotdl download $hash")){
-   do { };
-   };
+   if(!system("spotdl download $hash")){
+       next;
+   }else{ while(!system("spotdl download $hash")){
+             do {;}
+         }
+   }
 }
