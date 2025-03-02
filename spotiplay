@@ -45,8 +45,13 @@ foreach (@spotifyURL){
    $hash =~ tr/"//d;
    if(!system("spotdl download $hash")){
        next;
-   }else{ while(!system("spotdl download $hash")){
-             do {;}
-         }
-   }
+   }else{ my $i=0;
+        while(!system("spotdl download $hash")){
+            $i++;
+            if ($i==25){
+                 last;
+            }else{ last;
+            }
+        }
+    }
 }
