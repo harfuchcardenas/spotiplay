@@ -41,11 +41,9 @@ for(my $i = 1; $i < $#id;$i++){
 }
 my $func = 0;
 foreach (@spotifyURL){
-my $hash =$_;
-$hash =~ tr/"//d;
-print "\n HASH: $hash";
-$func = system("spotdl download $hash");
-if($func==1){
-   next
-}else{print "Fail"}
+   my $hash =$_;
+   $hash =~ tr/"//d;
+   while(!system("spotdl download $hash")){
+   do { };
+   };
 }
