@@ -36,11 +36,31 @@ while (my $line = <$fh>) {
 my @array = `ls ~/Musik`;
 foreach my $line (@array) {
     chomp($line);
-    print "Gefundene Datei: $line\n";
+    #print "Gefundene Datei: $line\n";
 }
+my $ffmpeg_command =  "ffmpeg  -i 'David Guetta - Paris.mp3' -f ffmetadata metadata.txt -hide_banner";
+# Capture the output of the ffmpeg command
+my $output = `$ffmpeg_command`;
+my $file = 'metadata.txt';
+my $search_string = 'comment';
+my @results;
 
-my $mp3 = `ffmpeg -i 'David Guetta - Paris.mp3'`;
-print "MP3: $mp3";
+open(my $fh2, '<', $file) or die "Cannot open file.";
+while (my $line = <$fh2>) {
+    if ($line =~ /\b\Q$search_string\E\b/){
+        push @results, $line;
+    }
+}
+my $comment = $results[0];
+print "Results: \n\n$comment";
+exit 0;
+# Parse the comment from the ffmpeg output
+if (my $output=~ /comment\s+:\s+(.*)/i){
+    my $comment = $1;  # Capture the value after 'comment:'
+    print "Extracted Comment: $comment\n";
+} else {
+    print "No comment field found in the string.\n";
+}
 exit 0;
 # Close the file handle
 close($fh);
