@@ -13,13 +13,14 @@ $current_directory=$current_directory.$temp;
 
 # Print the current directory path
 print "Current directory: $current_directory\n";
-# Specify the filename
-my $filename = $current_directory.'/My Spotify Library.csv';
+# Specify the spotify_songs of your csv document with the list of songs currently been your favorites' songs on Spotify
+my $spotify_songs = $current_directory.'/My Spotify Library.csv';
 my @id;
 my $id;
 my $i = 0;
+
 # Open the file for reading
-open(my $fh, '<', $filename) or die "Could not open file '$filename' $!";
+open(my $fh, '<', $spotify_songs) or die "Could not open file '$spotify_songs' $!";
 # Read the file line by line
 while (my $line = <$fh>) {
     chomp($line);  # Remove the newline character at the end of the line
@@ -27,10 +28,20 @@ while (my $line = <$fh>) {
     my @strings = split(/,/, $line);
     # Print the separated strings
     my $songID = $strings[6];
-    print "songID: $songID\n";
+    # print "songID: $songID\n";
     $id[$i]=$songID;
     $i++;
 }
+
+my @array = `ls ~/Musik`;
+foreach my $line (@array) {
+    chomp($line);
+    print "Gefundene Datei: $line\n";
+}
+
+my $mp3 = `ffmpeg -i 'David Guetta - Paris.mp3'`;
+print "MP3: $mp3";
+exit 0;
 # Close the file handle
 close($fh);
 my $spotifyURL;
