@@ -35,7 +35,8 @@ while (my $line = <$fh>) {
 # Close the file handle
 close($fh);
 
-my @array = `ls 0* ~/Musik`;
+my @array = `ls 0* /media/aharfuch/E93B-943D/Musik`;
+print "ARRAY: @array\n";
 my $spotifyURL;
 my @spotifyURL;
 my @URL;
@@ -47,7 +48,7 @@ foreach my $line (@array) {
     chomp($line);
     print "Gefundene Datei: $line\n";
      
-    my $ffmpeg_command =  $args[0].$apos, '$line', $apos.$args[1];
+    my $ffmpeg_command =  $args[0].$apos.$line. $apos.$args[1];
     # Capture the output of the ffmpeg command
     print "FFMPEG: $ffmpeg_command\n";
     system($ffmpeg_command);
@@ -57,10 +58,14 @@ foreach my $line (@array) {
     while (my $line = <$fh2>) {
         if ($line =~ /\b\Q$search_string\E\b\s*(.+)/){
             push @URL, $1;
+            print "ONE: $1\n";
             system("rm metadata.txt");
+            system("touch metadata.txt");
         }
     }
 }
+
+print "URL: @URL\n";
 
 exit 0;
 my $func = 0;
