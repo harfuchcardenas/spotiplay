@@ -27,19 +27,21 @@ while (my $line = <$fh>) {
     # Split the line based on the specified character (comma in this case)
     my @strings = split(/,/, $line);
     # Print the separated strings
-    my $songID = $strings[6];
+    my $songID = $strings[5];
     # print "songID: $songID\n";
     $id[$i]=$songID;
     $i++;
 }
+
+print "ID: @id\n";
+
 # Close the file handle
 close($fh);
 
 my @array = `ls 0* /media/aharfuch/E93B-943D/Musik`;
 print "ARRAY: @array\n";
-my $spotifyURL;
 my @spotifyURL;
-my @URL;
+my @TSRC;
 my @args;
 $args[0]='ffmpeg -y -i ';
 $args[1]=' -f ffmetadata metadata.txt -hide_banner';
@@ -53,22 +55,25 @@ foreach my $line (@array) {
     print "FFMPEG: $ffmpeg_command\n";
     system($ffmpeg_command);
     my $file = 'metadata.txt';
-    my $search_string = 'comment=';
+    my $search_string = 'TSRC            : ';
     open(my $fh2, '<', $file) or die "Cannot open file.";
     while (my $line = <$fh2>) {
         if ($line =~ /\b\Q$search_string\E\b\s*(.+)/){
-            push @URL, $1;
+            push @TSRC, $1;
             print "ONE: $1\n";
+            exit 0;
             system("rm metadata.txt");
             system("touch metadata.txt");
         }
     }
 }
 
-print "URL: @URL\n";
+print "TSRC: @TSRC\n";
+
+
 
 my $func = 0;
-foreach (@URL){
+foreach (@TSRC){
    my $hash =$_;
    $hash =~ tr/"//d;
    if(!system("spotdl download $hash")){
