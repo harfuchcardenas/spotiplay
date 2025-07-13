@@ -41,7 +41,7 @@ my $spotifyURL;
 my @spotifyURL;
 my @URL;
 my @args;
-$args[0]='ffmpeg -i ';
+$args[0]='ffmpeg -y -i ';
 $args[1]=' -f ffmetadata metadata.txt -hide_banner';
 my $apos = '"';
 foreach my $line (@array) {
@@ -67,7 +67,6 @@ foreach my $line (@array) {
 
 print "URL: @URL\n";
 
-exit 0;
 my $func = 0;
 foreach (@URL){
    my $hash =$_;
