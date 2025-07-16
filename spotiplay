@@ -4,7 +4,6 @@ use strict;  # Enforce strict variable declaration
 use warnings; # Enable warnings for better debugging
 
 # Print "Hello, World!" to the console
-print "Hello, World!\n";
 my $temp = '/../include';
 my $current_directory = qx(pwd);
 # Remove the newline character from the end of the output
@@ -15,8 +14,8 @@ $current_directory=$current_directory.$temp;
 print "Current directory: $current_directory\n";
 # Specify the spotify_songs of your csv document with the list of songs currently been your favorites' songs on Spotify
 my $spotify_songs = $current_directory.'/My Spotify Library.csv';
-my @id;
-my $id;
+my @TSRC;
+my $TSRC;
 my $i = 0;
 
 # Open the file for reading
@@ -29,61 +28,62 @@ while (my $line = <$fh>) {
     # Print the separated strings
     my $songID = $strings[5];
     # print "songID: $songID\n";
-    $id[$i]=$songID;
+    $TSRC[$i]=$songID;
     $i++;
 }
-
-print "ID: @id\n";
-
+print "IDs: @TSRC\n";
 # Close the file handle
 close($fh);
 
-my @array = `ls 0* /media/aharfuch/E93B-943D/Musik`;
-print "ARRAY: @array\n";
+my @array = `ls ~/Musik`;
+my $size = scalar @array;
 my @spotifyURL;
-my @TSRC;
+my @TSRC=@TSRC;
 my @args;
+
 $args[0]='ffmpeg -y -i ';
 $args[1]=' -f ffmetadata metadata.txt -hide_banner';
 my $apos = '"';
-foreach my $line (@array) {
-    chomp($line);
-    print "Gefundene Datei: $line\n";
-     
-    my $ffmpeg_command =  $args[0].$apos.$line. $apos.$args[1];
-    # Capture the output of the ffmpeg command
-    print "FFMPEG: $ffmpeg_command\n";
-    system($ffmpeg_command);
-    my $file = 'metadata.txt';
-    my $search_string = 'TSRC            : ';
-    open(my $fh2, '<', $file) or die "Cannot open file.";
-    while (my $line = <$fh2>) {
-        if ($line =~ /\b\Q$search_string\E\b\s*(.+)/){
-            push @TSRC, $1;
-            print "ONE: $1\n";
-            exit 0;
-            system("rm metadata.txt");
-            system("touch metadata.txt");
+
+if($size == 0) {
+    print "This folder has no titles from the playlist,
+all titles will be downloaded.";
+    foreach (@TSRC){
+        my $hash =$_;
+        $hash =~ tr/"//d; #Remove double quotes
+        if(!system("spotdl download $hash")){
+            next;
+        }else{ while(system("spotdl download $hash")){
+            ;
+            }
         }
     }
-}
-
-print "TSRC: @TSRC\n";
-
-
-
-my $func = 0;
-foreach (@TSRC){
-   my $hash =$_;
-   $hash =~ tr/"//d;
-   if(!system("spotdl download $hash")){
-       next;
-   }else{ my $i=0;
-        while(!system("spotdl download $hash")){
-            $i++;
-            if ($i==25){
-                 last;
-            }else{ last;
+}else { foreach my $line (@array) {
+        chomp($line);
+        print "Gefundene Datei: $line\n";
+        my $ffmpeg_command =  $args[0].$apos.$line. $apos.$args[1];
+        # Capture the output of the ffmpeg command
+        print "FFMPEG: $ffmpeg_command\n";
+        system($ffmpeg_command);
+        my $file = 'metadata.txt';
+        my $search_string = 'TSRC=';
+        open(my $fh2, '<', $file) or die "Cannot open file.";
+        while (my $line = <$fh2>) {
+            if ($line =~ /\b\Q$search_string\E\b\s*(.+)/) {
+                push @TSRC, $1;
+                foreach (@TSRC){
+                    print "Hash is: $_ Press enter to download.\n";
+                    my $hash =$_;
+                    $hash =~ tr/"//d;
+                    if(!system("spotdl download $hash")){
+                        next;
+                    }else{ my $i=0;
+                        while(!system("spotdl download $hash")){
+                            $i++;
+                        }
+                    }
+                }
+            }else {
             }
         }
     }
