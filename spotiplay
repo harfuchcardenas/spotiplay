@@ -2,43 +2,50 @@
 
 use strict;  # Enforce strict variable declaration
 use warnings; # Enable warnings for better debugging
+use Scalar::Util 'reftype';
 
-# Print "Hello, World!" to the console
 my $temp = '/../include';
 my $current_directory = qx(pwd);
+
 # Remove the newline character from the end of the output
 chomp($current_directory);
 $current_directory=$current_directory.$temp;
 
 # Print the current directory path
 print "Current directory: $current_directory\n";
+
 # Specify the spotify_songs of your csv document with the list of songs currently been your favorites' songs on Spotify
 my $spotify_songs = $current_directory.'/My Spotify Library.csv';
 my @TSRC;
 my $TSRC;
+my @songID;
+my $songID;
+
 my $i = 0;
 
 # Open the file for reading
 open(my $fh, '<', $spotify_songs) or die "Could not open file '$spotify_songs' $!";
+
 # Read the file line by line
 while (my $line = <$fh>) {
     chomp($line);  # Remove the newline character at the end of the line
     # Split the line based on the specified character (comma in this case)
     my @strings = split(/,/, $line);
     # Print the separated strings
-    my $songID = $strings[5];
+    $songID = $strings[5];
     # print "songID: $songID\n";
-    $TSRC[$i]=$songID;
+    $songID[$i]=$songID;
     $i++;
 }
-print "IDs: @TSRC\n";
+
+print "IDs: @songID\n";
+<STDIN>;
 # Close the file handle
 close($fh);
 
 my @array = `ls ~/Musik`;
 my $size = scalar @array;
 my @spotifyURL;
-my @TSRC=@TSRC;
 my @args;
 
 $args[0]='ffmpeg -y -i ';
@@ -71,20 +78,37 @@ all titles will be downloaded.";
         while (my $line = <$fh2>) {
             if ($line =~ /\b\Q$search_string\E\b\s*(.+)/) {
                 push @TSRC, $1;
-                foreach (@TSRC){
-                    print "Hash is: $_ Press enter to download.\n";
-                    my $hash =$_;
-                    $hash =~ tr/"//d;
-                    if(!system("spotdl download $hash")){
-                        next;
-                    }else{ my $i=0;
-                        while(!system("spotdl download $hash")){
-                            $i++;
-                        }
-                    }
-                }
             }else {
             }
+        }
+    }
+}
+print "TSRCs: $TSRC[1]\n\n";
+print "songID: $songID[1]\n\n";
+<STDIN>;
+
+my %local = map { $_ => 1 } @songID;
+
+#Filter TSRC IDs that are not found in @array
+my @fltrIDs = grep { not $local{$_} } @TSRC;
+
+# @fltrIDs now contains only songIDs in @TSRC not present in @array
+
+print "Filtered: @fltrIDs\n\n";
+print "TSRCs: @songID\n\n";
+<STDIN>;
+
+#Download each song by their TSRC
+foreach (@TSRC){
+    print "Hash is: $_\n";
+    # Create a hash for the second array for quick lookup
+    my $hash =$_;
+    $hash =~ tr/"//d;
+    if(!system("spotdl download $hash")){
+        next;
+    }else{ my $i=0;
+        while(!system("spotdl download $hash")){
+            $i++;
         }
     }
 }
