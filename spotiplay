@@ -2,7 +2,7 @@
 
 use strict;  # Enforce strict variable declaration
 use warnings; # Enable warnings for better debugging
-use Scalar::Util 'reftype';
+use MP3::Tag; 
 
 my $temp = '/../include';
 my $current_directory = qx(pwd);
