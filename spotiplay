@@ -18,8 +18,8 @@ print "Current directory: $current_directory\n";
 my $spotify_songs = $current_directory.'/My Spotify Library.csv';
 my @TSRC;
 my $TSRC;
-my @songID;
-my $songID;
+my @ISRC;
+my $ISRC;
 
 my $i = 0;
 
@@ -32,13 +32,13 @@ while (my $line = <$fh>) {
     # Split the line based on the specified character (comma in this case)
     my @strings = split(/,/, $line);
     # Print the separated strings
-    $songID = $strings[5];
-    # print "songID: $songID\n";
-    $songID[$i]=$songID;
+    $ISRC = $strings[5];
+    # print "ISRC: $ISRC\n";
+    $ISRC[$i]=$ISRC;
     $i++;
 }
 
-print "IDs: @songID\n";
+print "IDs: @ISRC\n";
 <STDIN>;
 # Close the file handle
 close($fh);
@@ -84,18 +84,18 @@ all titles will be downloaded.";
     }
 }
 print "TSRCs: $TSRC[1]\n\n";
-print "songID: $songID[1]\n\n";
+print "ISRC: $ISRC[1]\n\n";
 <STDIN>;
 
-my %local = map { $_ => 1 } @songID;
+my %local = map { $_ => 1 } @ISRC;
 
 #Filter TSRC IDs that are not found in @array
 my @fltrIDs = grep { not $local{$_} } @TSRC;
 
-# @fltrIDs now contains only songIDs in @TSRC not present in @array
+# @fltrIDs now contains only ISRCs in @TSRC not present in @array
 
 print "Filtered: @fltrIDs\n\n";
-print "TSRCs: @songID\n\n";
+print "TSRCs: @ISRC\n\n";
 <STDIN>;
 
 #Download each song by their TSRC
