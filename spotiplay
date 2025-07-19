@@ -20,6 +20,8 @@ my @TSRC;
 my $TSRC;
 my @ISRC;
 my $ISRC;
+my @spotid;
+my $spotid;
 
 my $i = 0;
 
@@ -33,18 +35,22 @@ while (my $line = <$fh>) {
     my @strings = split(/,/, $line);
     # Print the separated strings
     $ISRC = $strings[5];
-    # print "ISRC: $ISRC\n";
     $ISRC[$i]=$ISRC;
+    $spotid = $strings[6];
+    $spotid[$i]=$spotid;
     $i++;
 }
+shift @ISRC;
+shift @spotid;
 
 print "ISRC(csv): @ISRC\n";
+print "spotid(csv): @spotid\n";
 <STDIN>;
 
 # Close the file handle
 close($fh);
 
-my @MP3 = `ls ~/Musik`;
+my @MP3 = `ls ~/Musik/*.mp3 ~/Musik/*.flac ~/Musik/*.wav ~/Musik/*.m4a ~/Musik/*.ogg 2>/dev/null`;
 my $size = scalar @MP3;
 my @spotifyURL;
 my @args;
@@ -56,12 +62,12 @@ my $apos = '"';
 if($size == 0) {
     print "This folder has no titles from the playlist,
 all titles will be downloaded.";
-    foreach (@ISRC){
+    foreach (@spotid){
         my $hash =$_;
         $hash =~ tr/"//d; #Remove double quotes
-        if(!system("spotdl download $hash")){
+        if(!system("spotdl download https://open.spotify.com/intl-de/track/$hash")){
             next;
-        }else{ while(system("spotdl download $hash")){
+        }else{ while(system("spotdl download https://open.spotify.com/intl-de/track/$hash")){
             ;
             }
         }
@@ -87,8 +93,8 @@ all titles will be downloaded.";
         }
     }
 }
-print "TSRCs: @TSRC\n\n";
-print "ISRC: @ISRC\n\n";
+print "TSRCs: @TSRC\n\n"; #TSRCs from the files found in the Musik directory
+print "ISRC: @ISRC\n\n"; #ISRCs from the songs extracted from the csv file
 <STDIN>;
 
 my %tsrc_lookup = map { $_ => 1 } @TSRC;
@@ -98,21 +104,27 @@ my @not_found_isrcs = grep { !$tsrc_lookup{$_} } @ISRC;
 
 # @fltrIDs now contains only ISRCs in @TSRC not present in @MP3
 
-print "Filtered: @not_found_isrcs\n\n";
-print "TSRCs: @ISRC\n\n";
+print "Filtered: @not_found_isrcs\n\n"; #The ISRCs that would not have matched any file stored in the Musik directory
 <STDIN>;
 
+my @not_found_spotids;
+for (my $i = 0; $i < $#ISRC; $i++) {
+    if ($ISRC[$i] eq $not_found_isrcs[$i]){
+        print "For ISRC[$i] is $spotid[$i]\n";
+        push (@not_found_spotids, $spotid);
+    }
+}
+
 #Download each song by their TSRC
-foreach (@not_found_isrcs){
+foreach (@not_found_spotids){
     print "Hash is: $_\n";
     # Create a hash for the second array for quick lookup
     my $hash =$_;
     $hash =~ tr/"//d;
-    if(!system("spotdl download $hash")){
+    if(!system("spotdl download https://open.spotify.com/track/$hash")){
         next;
-    }else{ my $i=0;
-        while(!system("spotdl download $hash")){
-            $i++;
+    }else{ while(system("spotdl download https://open.spotify.com/track/$hash")){
+        ; #Do nothing until the song's exist exit code is 0
         }
     }
 }
