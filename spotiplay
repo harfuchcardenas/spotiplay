@@ -72,6 +72,7 @@ all titles will be downloaded.";
             }
         }
     }
+    exit 0;
 }else { foreach my $line (@MP3) {
         chomp($line);
         print "Found file: $line\n";
@@ -109,7 +110,7 @@ print "Filtered: @not_found_isrcs\n\n"; #The ISRCs that would not have matched a
 
 my @not_found_spotids;
 for (my $i = 0; $i < $#ISRC; $i++) {
-    if ($ISRC[$i] eq $not_found_isrcs[$i]){
+    if ($ISRC[$i] = $not_found_isrcs[$i]){
         print "For ISRC[$i] is $spotid[$i]\n";
         push (@not_found_spotids, $spotid);
     }
