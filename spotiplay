@@ -2,7 +2,7 @@
 
 use strict;  # Enforce strict variable declaration
 use warnings; # Enable warnings for better debugging
-use MP3::Tag; 
+#use MP3::Tag; 
 
 my $temp = '/../include';
 my $current_directory = qx(pwd);
@@ -38,13 +38,14 @@ while (my $line = <$fh>) {
     $i++;
 }
 
-print "IDs: @ISRC\n";
+print "ISRC(csv): @ISRC\n";
 <STDIN>;
+
 # Close the file handle
 close($fh);
 
-my @array = `ls ~/Musik`;
-my $size = scalar @array;
+my @MP3 = `ls ~/Musik`;
+my $size = scalar @MP3;
 my @spotifyURL;
 my @args;
 
@@ -55,7 +56,7 @@ my $apos = '"';
 if($size == 0) {
     print "This folder has no titles from the playlist,
 all titles will be downloaded.";
-    foreach (@TSRC){
+    foreach (@ISRC){
         my $hash =$_;
         $hash =~ tr/"//d; #Remove double quotes
         if(!system("spotdl download $hash")){
@@ -65,13 +66,16 @@ all titles will be downloaded.";
             }
         }
     }
-}else { foreach my $line (@array) {
+}else { foreach my $line (@MP3) {
         chomp($line);
-        print "Gefundene Datei: $line\n";
+        print "Found file: $line\n";
+#$args[0]='ffmpeg -y -i ';
+#$args[1]=' -f ffmetadata metadata.txt -hide_banner';
+#my $apos = '"';
         my $ffmpeg_command =  $args[0].$apos.$line. $apos.$args[1];
         # Capture the output of the ffmpeg command
-        print "FFMPEG: $ffmpeg_command\n";
-        system($ffmpeg_command);
+        print "FFMPEG: $ffmpeg_command\n"; 
+        system($ffmpeg_command); #Print song details
         my $file = 'metadata.txt';
         my $search_string = 'TSRC=';
         open(my $fh2, '<', $file) or die "Cannot open file.";
@@ -83,23 +87,23 @@ all titles will be downloaded.";
         }
     }
 }
-print "TSRCs: $TSRC[1]\n\n";
-print "ISRC: $ISRC[1]\n\n";
+print "TSRCs: @TSRC\n\n";
+print "ISRC: @ISRC\n\n";
 <STDIN>;
 
-my %local = map { $_ => 1 } @ISRC;
+my %tsrc_lookup = map { $_ => 1 } @TSRC;
 
-#Filter TSRC IDs that are not found in @array
-my @fltrIDs = grep { not $local{$_} } @TSRC;
+#Filter TSRC IDs that are not found in @MP3
+my @not_found_isrcs = grep { !$tsrc_lookup{$_} } @ISRC;
 
-# @fltrIDs now contains only ISRCs in @TSRC not present in @array
+# @fltrIDs now contains only ISRCs in @TSRC not present in @MP3
 
-print "Filtered: @fltrIDs\n\n";
+print "Filtered: @not_found_isrcs\n\n";
 print "TSRCs: @ISRC\n\n";
 <STDIN>;
 
 #Download each song by their TSRC
-foreach (@TSRC){
+foreach (@not_found_isrcs){
     print "Hash is: $_\n";
     # Create a hash for the second array for quick lookup
     my $hash =$_;
