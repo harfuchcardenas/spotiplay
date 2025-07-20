@@ -45,7 +45,6 @@ shift @spotid;
 
 print "ISRC(csv): @ISRC\n";
 print "spotid(csv): @spotid\n";
-<STDIN>;
 
 # Close the file handle
 close($fh);
@@ -96,7 +95,6 @@ all titles will be downloaded.";
 }
 print "TSRCs: @TSRC\n\n"; #TSRCs from the files found in the Musik directory
 print "ISRC: @ISRC\n\n"; #ISRCs from the songs extracted from the csv file
-<STDIN>;
 
 my %tsrc_lookup = map { $_ => 1 } @TSRC;
 
@@ -106,7 +104,6 @@ my @not_found_isrcs = grep { !$tsrc_lookup{$_} } @ISRC;
 # @fltrIDs now contains only ISRCs in @TSRC not present in @MP3
 
 print "Filtered: @not_found_isrcs\n\n"; #The ISRCs that would not have matched any file stored in the Musik directory
-<STDIN>;
 
 my @not_found_spotids;
 for (my $i = 0; $i < $#ISRC; $i++) {
@@ -115,7 +112,7 @@ for (my $i = 0; $i < $#ISRC; $i++) {
         push (@not_found_spotids, $spotid);
     }
 }
-
+my @failed;
 #Download each song by their TSRC
 foreach (@not_found_spotids){
     print "Hash is: $_\n";
@@ -124,8 +121,6 @@ foreach (@not_found_spotids){
     $hash =~ tr/"//d;
     if(!system("spotdl download https://open.spotify.com/track/$hash")){
         next;
-    }else{ while(system("spotdl download https://open.spotify.com/track/$hash")){
-        ; #Do nothing until the song's exist exit code is 0
-        }
+    }else{ push (@failed,$hash);
     }
 }
