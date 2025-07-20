@@ -26,20 +26,22 @@ while (my $line = <$fh>) {
     # Split the line based on the specified character (comma in this case)
     my @strings = split(/,/, $line);
     # Print the separated strings
-    my $songID = $strings[5];
+    my $songID = $strings[6];
     # print "songID: $songID\n";
     $TSRC[$i]=$songID;
     $i++;
 }
+shift(@TSRC);
 print "IDs: @TSRC\n";
+<STDIN>;
 # Close the file handle
 close($fh);
 
 my @array = `ls ~/Musik`;
 my $size = scalar @array;
 my @spotifyURL;
-my @TSRC=@TSRC;
 my @args;
+my @fallen;
 
 $args[0]='ffmpeg -y -i ';
 $args[1]=' -f ffmetadata metadata.txt -hide_banner';
@@ -51,14 +53,14 @@ all titles will be downloaded.";
     foreach (@TSRC){
         my $hash =$_;
         $hash =~ tr/"//d; #Remove double quotes
-        if(!system("spotdl download $hash")){
+        if(!system("spotdl download https://open.spotify.com/intl-de/track/$hash")){
             next;
-        }else{ while(system("spotdl download $hash")){
-            ;
+        }else{
+            print "It has fallen, therefore pushing to fallen.\n";
+            push(@fallen,$hash);
             }
         }
-    }
-}else { foreach my $line (@array) {
+    } else { foreach my $line (@array) {
         chomp($line);
         print "Gefundene Datei: $line\n";
         my $ffmpeg_command =  $args[0].$apos.$line. $apos.$args[1];
@@ -72,18 +74,19 @@ all titles will be downloaded.";
             if ($line =~ /\b\Q$search_string\E\b\s*(.+)/) {
                 push @TSRC, $1;
                 foreach (@TSRC){
-                    print "Hash is: $_ Press enter to download.\n";
+                    print "To get downloaded hash: $_.\n";
                     my $hash =$_;
                     $hash =~ tr/"//d;
-                    if(!system("spotdl download $hash")){
+                    if(!system("spotdl download https://open.spotify.com/intl-de/track/$hash")){
                         next;
                     }else{ my $i=0;
-                        while(!system("spotdl download $hash")){
-                            $i++;
-                        }
+                        print "It has fallen, therefore pushing to fallen.\n";
+                        push(@fallen,$hash);
+                        $i++;
                     }
                 }
-            }else {
+            }
+            else {
             }
         }
     }
