@@ -42,8 +42,8 @@ print "SpotifyIDs: @spotifyID\nPress enter to continue"; #TSRC from CSV file fro
 # Close the file handle
 close($fh);
 
-my @array = `ls ~/Musik`;
-my $size = scalar @array;
+my @local_music= `ls ~/Musik`;
+my $size_local_music = scalar @local_music;
 my @spotifyURL;
 my @args;
 my @fallen;
@@ -52,7 +52,7 @@ $args[0]='ffmpeg -y -i ';
 $args[1]=' -f ffmetadata metadata.txt -hide_banner';
 my $apos = '"';
 
-if($size == 0) {
+if($size_local_music == 0) {
     print "This folder has no titles from the playlist,
 all titles will be downloaded.";
     foreach (@TSRC){
@@ -65,7 +65,7 @@ all titles will be downloaded.";
             push(@fallen,$hash);
             }
         }
-    } else { foreach my $line (@array) {
+    } else { foreach my $line (@local_music) {
         chomp($line);
         print "Gefundene Datei: $line\n";
         my $ffmpeg_command =  $args[0].$apos.$line. $apos.$args[1];
