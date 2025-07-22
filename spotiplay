@@ -87,22 +87,13 @@ all titles will be downloaded.";
         }
     }
 
-    my %seen = map { $_ => 1 } @TSRC_mp3;
-    print "Seen: %seen
-    my @TSRC_download;
+    # Create hash to track occurrences
+    my %count;
+    $count{$_}++ for (@TSRC_mp3, @TSRC_csv);
 
-    for my $i (0 .. $#TSRC_csv) {
-        unless ($seen{$TSRC_csv[$i]}) {
-            push @TSRC_download, $TSRC_csv[$i];
-        }
-    }
+    # Filter elements that appear only once (i.e., unique to one array)
+    my @toDownload = grep { $count{$_} == 1 } (@TSRC_mp3, @TSRC_csv);
 
-    my @toDownload;
-    for my $i (0 .. $#TSRC_csv) {
-        if ($TSRC_download[$i] eq $TSRC_csv[$i]) {
-            $toDownload[$i] = $spotifyID[$i];
-        }
-    }
     print "Size of \@toDownload: $#toDownload\n";
     print "Size of \@TSRC_cvs: $#TSRC_csv\n";
     <STDIN>;
