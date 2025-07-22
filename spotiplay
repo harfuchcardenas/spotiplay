@@ -44,7 +44,7 @@ print "SpotifyIDs: @spotifyID\nPress enter to continue"; #TSRC from CSV file fro
 # Close the file handle
 close($fh);
 system(`cd /media/aharfuch/E93B-943D/Musik`);
-my @local_music= `ls ./`;
+my @local_music= `ls *.mp3 *.wav *.flac *.aac *.ogg 2>/dev/null`;
 my $size_local_music = scalar @local_music;
 my @spotifyURL;
 my @args;
