@@ -14,8 +14,8 @@ $current_directory=$current_directory.$temp;
 print "Current directory: $current_directory\n";
 # Specify the spotify_songs of your csv document with the list of songs currently been your favorites' songs on Spotify
 my $spotify_songs = $current_directory.'/My Spotify Library.csv';
-my @TSRC;
-my $TSRC;
+my @TSRC_csv;
+my $TSRC_csv;
 my @spotifyID;
 my $spotifyID;
 my $i = 0;
@@ -28,13 +28,13 @@ while (my $line = <$fh>) {
     # Split the line based on the specified character (comma in this case)
     my @strings = split(/,/, $line);
     # Print the separated strings
-    $TSRC[$i] = $strings[5];
+    $TSRC_csv[$i] = $strings[5];
     $spotifyID[$i] = $strings[6];
     $i++;
 }
-shift(@TSRC);
+shift(@TSRC_csv);
 shift(@spotifyID);
-print "TSRCs: @TSRC\nPress enter to continue"; #TSRC from CSV file from Spotify
+print "TSRCs: @TSRC_csv\nPress enter to continue"; #TSRC from CSV file from Spotify
 <STDIN>;
 print "SpotifyIDs: @spotifyID\nPress enter to continue"; #TSRC from CSV file from Spotify
 <STDIN>;
@@ -55,7 +55,7 @@ my $apos = '"';
 if($size_local_music == 0) {
     print "This folder has no titles from the playlist,
 all titles will be downloaded.";
-    foreach (@TSRC){
+    foreach (@TSRC_csv){
         my $hash =$_;
         $hash =~ tr/"//d; #Remove double quotes
         if(!system("spotdl https://open.spotify.com/track/$hash")){
@@ -77,8 +77,8 @@ all titles will be downloaded.";
         open(my $fh2, '<', $file) or die "Cannot open file.";
         while (my $line = <$fh2>) {
             if ($line =~ /\b\Q$search_string\E\b\s*(.+)/) {
-                push @TSRC, $1;
-                foreach (@TSRC){
+                push @TSRC_csv, $1;
+                foreach (@TSRC_csv){
                     print "To get downloaded hash: $_.\n";
                     my $hash =$_;
                     $hash =~ tr/"//d;
