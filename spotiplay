@@ -43,8 +43,8 @@ print "SpotifyIDs: @spotifyID\nPress enter to continue"; #TSRC from CSV file fro
 
 # Close the file handle
 close($fh);
-
-my @local_music= `ls ~/Musik`;
+system(`cd /media/aharfuch/E93B-943D/Musik`);
+my @local_music= `ls ./`;
 my $size_local_music = scalar @local_music;
 my @spotifyURL;
 my @args;
@@ -102,6 +102,9 @@ all titles will be downloaded.";
             $toDownload[$i] = $spotifyID[$i];
         }
     }
+    print "Size of \@toDownload: $#toDownload\n";
+    print "Size of \@TSRC_cvs: $#TSRC_csv\n";
+    <STDIN>;
     foreach (@toDownload){
         print "To get downloaded hash: $_.\n";
         my $hash =$_;
