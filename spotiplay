@@ -16,6 +16,8 @@ print "Current directory: $current_directory\n";
 my $spotify_songs = $current_directory.'/My Spotify Library.csv';
 my @TSRC;
 my $TSRC;
+my @spotifyID;
+my $spotifyID;
 my $i = 0;
 
 # Open the file for reading
@@ -26,14 +28,17 @@ while (my $line = <$fh>) {
     # Split the line based on the specified character (comma in this case)
     my @strings = split(/,/, $line);
     # Print the separated strings
-    my $songID = $strings[6];
-    # print "songID: $songID\n";
-    $TSRC[$i]=$songID;
+    $TSRC[$i] = $strings[5];
+    $spotifyID[$i] = $strings[6];
     $i++;
 }
 shift(@TSRC);
-print "IDs: @TSRC\n";
+shift(@spotifyID);
+print "TSRCs: @TSRC\nPress enter to continue"; #TSRC from CSV file from Spotify
 <STDIN>;
+print "SpotifyIDs: @spotifyID\nPress enter to continue"; #TSRC from CSV file from Spotify
+<STDIN>;
+
 # Close the file handle
 close($fh);
 
@@ -53,7 +58,7 @@ all titles will be downloaded.";
     foreach (@TSRC){
         my $hash =$_;
         $hash =~ tr/"//d; #Remove double quotes
-        if(!system("spotdl download https://open.spotify.com/intl-de/track/$hash")){
+        if(!system("spotdl https://open.spotify.com/track/$hash")){
             next;
         }else{
             print "It has fallen, therefore pushing to fallen.\n";
@@ -77,7 +82,7 @@ all titles will be downloaded.";
                     print "To get downloaded hash: $_.\n";
                     my $hash =$_;
                     $hash =~ tr/"//d;
-                    if(!system("spotdl download https://open.spotify.com/intl-de/track/$hash")){
+                    if(!system("spotdl https://open.spotify.com/track/$hash")){
                         next;
                     }else{ my $i=0;
                         print "It has fallen, therefore pushing to fallen.\n";
