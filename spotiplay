@@ -105,16 +105,18 @@ all titles will be downloaded.\n";
     }
 
     # Create hash to track occurrences
-    my @TSRC_csv2 = @TSRC_csv;
     my %count;
-    $count{$_}++ for (@TSRC_mp3, @TSRC_csv2);
+    $count{$_}++ for (@TSRC_mp3, @TSRC_csv);
 
     # Filter elements that appear only once (i.e., unique to one array)
-    my @toDownload = grep { $count{$_} > 1 } @TSRC_csv2;
+    my @toDownload = grep { $count{$_} > 1 } @TSRC_csv;
 
     print "Size of \@toDownload: $#toDownload\n";
-    print "Size of \@TSRC_cvs: $#TSRC_csv2\n";
+    print "Size of \@TSRC_cvs: $#TSRC_csv\n";
     print "Press enter to download the non exisiting songs:\n";
+    # Get spotifyIDs with the TSRCs from TSRC_csv
+
+
     <STDIN>;
     my @toDownload2;
     foreach (@toDownload){
