@@ -43,17 +43,28 @@ print "SpotifyIDs: @spotifyID\nPress enter to continue"; #TSRC from CSV file fro
 
 # Close the file handle
 close($fh);
-system(`cd /media/aharfuch/E93B-943D/Musik`);
-my @local_music= `ls *.mp3 *.wav *.flac *.aac *.ogg 2>/dev/null`;
+my $dir_path = "/media/aharfuch/E93B-943D/Musik";
+opendir(my $dh, $dir_path) or die "Cannot open directory '$dir_path': $!";
+my @local_music = readdir($dh);
+closedir($dh);
+
+foreach my $file (@files) {
+    next if $file eq '.' or $file eq '..'; # skip current and parent directories
+    print "Found $file\n";
+    <STDIN>;
+}
+
+#my @local_music= `ls *.mp3 *.wav *.flac *.aac *.ogg 2>/dev/null`;
 my $size_local_music = scalar @local_music;
 my @spotifyURL;
 my @args;
 my @fallen;
 
 $args[0]='ffmpeg -y -i ';
-$args[1]=' -f ffmetadata metadata.txt -hide_banner';
+$args[1]=' -f ffmetadata metadata.txt -hide_banner -loglevel quiet';
 my $apos = '"';
 
+chdir("$dir_path") or die "Can't change dir: $!";
 if($size_local_music == 0) {
     print "This folder has no titles from the playlist,
 all titles will be downloaded.";
@@ -67,14 +78,19 @@ all titles will be downloaded.";
             push(@fallen,$hash);
             }
         }
+    my $filename = 'fallen.txt';
+    open(my $fh, '>', $filename) or die "Cannot open file '$filename': $!";
+    foreach my $item (@data) {
+        print $fh "$item\n"; #Each item on a new line
+    }
+    close($fh);
+    print "Fallen have been written to fallen.txt file\n";
     exit 0;
 } else {
     foreach my $line (@local_music) {
         chomp($line);
-        print "Gefundene Datei: $line\n";
         my $ffmpeg_command =  $args[0].$apos.$line. $apos.$args[1];
         # Capture the output of the ffmpeg command
-        print "FFMPEG: $ffmpeg_command\n";
         system($ffmpeg_command);
         my $file = 'metadata.txt';
         my $search_string = 'TSRC=';
