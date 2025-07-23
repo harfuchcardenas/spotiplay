@@ -48,10 +48,9 @@ opendir(my $dh, $dir_path) or die "Cannot open directory '$dir_path': $!";
 my @local_music = readdir($dh);
 closedir($dh);
 
-foreach my $file (@files) {
+foreach my $file (@local_music) {
     next if $file eq '.' or $file eq '..'; # skip current and parent directories
-    print "Found $file\n";
-    <STDIN>;
+    print "Found - $file\n";
 }
 
 #my @local_music= `ls *.mp3 *.wav *.flac *.aac *.ogg 2>/dev/null`;
@@ -67,7 +66,9 @@ my $apos = '"';
 chdir("$dir_path") or die "Can't change dir: $!";
 if($size_local_music == 0) {
     print "This folder has no titles from the playlist,
-all titles will be downloaded.";
+all titles will be downloaded.\n";
+    print "Press enter to continue.\n";
+    <STDIN>;
     foreach (@TSRC_csv){
         my $hash =$_;
         $hash =~ tr/"//d; #Remove double quotes
@@ -80,11 +81,11 @@ all titles will be downloaded.";
         }
     my $filename = 'fallen.txt';
     open(my $fh, '>', $filename) or die "Cannot open file '$filename': $!";
-    foreach my $item (@data) {
+    foreach my $item (@fallen) {
         print $fh "$item\n"; #Each item on a new line
     }
     close($fh);
-    print "Fallen have been written to fallen.txt file\n";
+    print "Fallen songs have been written to fallen.txt file\n";
     exit 0;
 } else {
     foreach my $line (@local_music) {
@@ -104,11 +105,12 @@ all titles will be downloaded.";
     }
 
     # Create hash to track occurrences
+    my @TSRC_csv2 = @TSRC_csv;
     my %count;
-    $count{$_}++ for (@TSRC_mp3, @TSRC_csv);
+    $count{$_}++ for (@TSRC_mp3, @TSRC_csv2);
 
     # Filter elements that appear only once (i.e., unique to one array)
-    my @toDownload = grep { $count{$_} == 1 } (@TSRC_mp3, @TSRC_csv);
+    my @toDownload = grep { $count{$_} == 1 } @TSRC_csv2;
 
     print "Size of \@toDownload: $#toDownload\n";
     print "Size of \@TSRC_cvs: $#TSRC_csv\n";
