@@ -109,23 +109,31 @@ all titles will be downloaded.\n";
     $count{$_}++ for (@TSRC_mp3, @TSRC_csv);
 
     # Filter elements that appear only once (i.e., unique to one array)
-    my @toDownload = grep { $count{$_} > 1 } @TSRC_csv;
-
-    print "Size of \@toDownload: $#toDownload\n";
+    my @tDwdTSRCs = grep { $count{$_} > 1 } @TSRC_csv;
+    my @tDwdSpotIDs;
+    print "Size of \@tDownloadTSRCs: $#tDwdTSRCs\n";
     print "Size of \@TSRC_cvs: $#TSRC_csv\n";
+    print "Size of \@spotifyID: $#spotifyID\n";
     print "Press enter to download the non exisiting songs:\n";
     # Get spotifyIDs with the TSRCs from TSRC_csv
-
-
+    for (my $i = 0; $i < $#TSRC_csv; $i++) {
+        foreach(@tDwdTSRCs) {
+            if($_ eq $TSRC_csv[$i]) {
+                push @tDwdSpotIDs, $spotifyID[$i];
+            }
+        }
+    }
+    print "Press enter to show the spotifyIDs\n";
     <STDIN>;
-    my @toDownload2;
-    foreach (@toDownload){
+    
+    my @refused;
+    foreach (@tDwdSpotIDs){
         print "To get downloaded hash: $_.\n";
         my $hash =$_;
         $hash =~ tr/"//d;
         if(!system("spotdl https://open.spotify.com/track/$hash")){
         }else {
-            push @toDownload2, $hash;
+            push @refused, $hash;
         }
     }
 }
